@@ -27,7 +27,7 @@
 #define TASK_PERIOD_MS(ms) ((ms) * 1000)
 #define TASK_PERIOD_US(us) (us)
 
-#define GYRO_TASK_GUARD_INTERVAL_US 10  // Don't run any other tasks if gyro task will be run soon
+#define GYRO_TASK_GUARD_INTERVAL_US 10  // Don't run any other tasks if gyro task will run soon
 
 #if defined(USE_TASK_STATISTICS)
 #define TASK_STATS_MOVING_SUM_COUNT 32
