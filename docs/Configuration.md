@@ -44,9 +44,9 @@ Assuming your hardware is supported and you've thoroughly tested your peripheral
 To create your own configuration, you must first use the `resource` command in the command line interface to map your peripheral pins on your controller. Use the CLI documentation linked above and other wiki pages for command reference. Then, you use the `set` command to set the bus type, i2c address, lowpass filter frequency/type, baro_hardware, gyro_hardware, etc. This will mainly be dependent on your hardware and will involve a lot of trial and error. Use the `save` command to save your configuration and reboot the controller. If your hardware is not detected, then you need to modify or create more settings in the CLI to accurately describe your hardware to Betaflight to detect it. Use your custom board's and respective peripherals' datasheets and schematics to help you.
 
 Alongside `resource` and `set` commands, there are `timer` and `dma` commands. For certain functions, such as battery voltage monitoring and motor output, you need to associate a timer and/or a Direct Memory Access (DMA) to those pins for those to work.
-`# timer`
-`timer <pin> AF(x) [1-3]`
-`# dma`
-`dma [SPI_TX|ADC|pin] [index|pin] [0|1]`
+- `# timer`
+- `timer <pin> AF(x) [1-3]`
+- `# dma`
+- `dma [SPI_TX|ADC|pin] [index|pin] [0|1]`
 
 For custom configuration like this outside the normal use-case, it's recommended that you use the pre-made [configs](https://github.com/betaflight/unified-targets/tree/master/configs/default) as a source of reference.
