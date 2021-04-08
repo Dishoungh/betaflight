@@ -53,13 +53,13 @@ Configure min/max cell voltages using the following CLI setting:
 
 `vbat_scale` - Adjust this to match actual measured battery voltage to reported value (which may be displayed via the `status` command)
 
-`vbat_max_cell_voltage` - Maximum voltage per cell, used for auto-detecting battery voltage in 0.1V units, i.e. 43 = 4.3V
+`vbat_max_cell_voltage` - Maximum voltage per cell, used for auto-detecting battery voltage in 0.01V units, i.e. 430 = 4.3V
 
-`vbat_min_cell_voltage` - Minimum voltage per cell; this triggers battery-critical alarms, in 0.1V units, i.e. 33 = 3.3V
+`vbat_min_cell_voltage` - Minimum voltage per cell; this triggers battery-critical alarms, in 0.01V units, i.e. 330 = 3.3V
 
-`vbat_warning_cell_voltage` - Warning voltage per cell; this triggers battery-warning alarms, in 0.1V units, i.e. 34 = 3.4V
+`vbat_warning_cell_voltage` - Warning voltage per cell; this triggers battery-warning alarms, in 0.01V units, i.e. 340 = 3.4V
 
-`vbat_hysteresis` - Sets the hysteresis value for low-battery alarms, in 0.1V units, i.e. 1 = 0.1V
+`vbat_hysteresis` - Sets the hysteresis value for low-battery alarms, in 0.01V units, i.e. 10 = 0.10V
 
 `vbat_duration_for_warning` - Period voltage has to sustain before the battery state is set to battery-warning, in 0.1 s, i.e. 60 = 6.0 seconds
 
@@ -68,9 +68,9 @@ Configure min/max cell voltages using the following CLI setting:
 e.g.
 ```
 set vbat_scale = 110
-set vbat_max_cell_voltage = 43
-set vbat_min_cell_voltage = 33
-set vbat_warning_cell_voltage = 34
+set vbat_max_cell_voltage = 430
+set vbat_min_cell_voltage = 330
+set vbat_warning_cell_voltage = 340
 set vbat_hysteresis = 1
 set vbat_duration_for_warning = 60
 set vbat_duration_for_critical = 20
@@ -101,7 +101,7 @@ Configure the current meter type using the `amperage_meter_type` settings here:
 | ADC     | ADC/hardware sensor    |
 | VIRTUAL | Virtual sensor         |
 
-Configure capacity using the `battery_capacity` setting, in mAh units.
+Configure capacity using the `bat_capacity` setting, in mAh units.
 
 If you're using an OSD that expects the multiwii current meter output value, then set `multiwii_amperage_meter_output` to `ON` (this multiplies amperage sent to MSP by 10 and truncates negative values)).
 

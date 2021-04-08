@@ -112,6 +112,7 @@
 
 #include "osd/osd.h"
 #include "osd/osd_elements.h"
+#include "osd/osd_warnings.h"
 
 #include "pg/beeper.h"
 #include "pg/board.h"
@@ -1211,6 +1212,28 @@ static bool mspProcessOutCommand(int16_t cmdMSP, sbuf_t *dst)
         break;
 #endif
 
+#ifdef USE_OSD
+    case MSP2_GET_OSD_WARNINGS:
+        {
+            bool isBlinking;
+            uint8_t displayAttr;
+            char warningsBuffer[OSD_FORMAT_MESSAGE_BUFFER_SIZE];
+
+            renderOsdWarning(warningsBuffer, &isBlinking, &displayAttr);
+            const uint8_t warningsLen = strlen(warningsBuffer);
+
+            if (isBlinking) {
+                displayAttr |= DISPLAYPORT_ATTR_BLINK;
+            }
+            sbufWriteU8(dst, displayAttr);  // see displayPortAttr_e
+            sbufWriteU8(dst, warningsLen);  // length byte followed by the actual characters
+            for (unsigned i = 0; i < warningsLen; i++) {
+                sbufWriteU8(dst, warningsBuffer[i]);
+            }
+            break;
+        }
+#endif
+
     case MSP_RC:
         for (int i = 0; i < rxRuntimeState.channelCount; i++) {
             sbufWriteU16(dst, rcData[i]);
@@ -1747,9 +1770,9 @@ static bool mspProcessOutCommand(int16_t cmdMSP, sbuf_t *dst)
 #endif
         // Added in MSP API 1.42
 #if defined(USE_GYRO_DATA_ANALYSE)
-        sbufWriteU8(dst, 0); // DEPRECATED 1.43: dyn_notch_range
-        sbufWriteU8(dst, gyroConfig()->dyn_notch_width_percent);
-        sbufWriteU16(dst, gyroConfig()->dyn_notch_q);
+        sbufWriteU8(dst, 0);  // DEPRECATED 1.43: dyn_notch_range
+        sbufWriteU8(dst, 0);  // DEPRECATED 1.44: dyn_notch_width_percent
+        sbufWriteU16(dst, 0); // DEPRECATED 1.44: dyn_notch_q
         sbufWriteU16(dst, gyroConfig()->dyn_notch_min_hz);
 #else
         sbufWriteU8(dst, 0);
@@ -1775,6 +1798,13 @@ static bool mspProcessOutCommand(int16_t cmdMSP, sbuf_t *dst)
         sbufWriteU8(dst, currentPidProfile->dyn_lpf_curve_expo);
 #else
         sbufWriteU8(dst, 0);
+#endif
+#if defined(USE_GYRO_DATA_ANALYSE)
+        sbufWriteU8(dst, gyroConfig()->dyn_notch_count);
+        sbufWriteU16(dst, gyroConfig()->dyn_notch_bandwidth_hz);
+#else
+        sbufWriteU8(dst, 0);
+        sbufWriteU16(dst, 0);
 #endif
 
         break;
@@ -2098,7 +2128,7 @@ static mspResult_e mspFcProcessOutCommandWithArg(mspDescriptor_t srcDesc, int16_
 #endif // USE_VTX_TABLE
 
 #ifdef USE_SIMPLIFIED_TUNING
-    // Added in MSP API 1.43
+    // Added in MSP API 1.44
     case MSP_SIMPLIFIED_TUNING:
         {
             sbufWriteU8(dst, currentPidProfile->simplified_pids_mode);
@@ -2612,9 +2642,9 @@ static mspResult_e mspProcessInCommand(mspDescriptor_t srcDesc, int16_t cmdMSP, 
         if (sbufBytesRemaining(src) >= 8) {
             // Added in MSP API 1.42
 #if defined(USE_GYRO_DATA_ANALYSE)
-            sbufReadU8(src); // DEPRECATED: dyn_notch_range
-            gyroConfigMutable()->dyn_notch_width_percent = sbufReadU8(src);
-            gyroConfigMutable()->dyn_notch_q = sbufReadU16(src);
+            sbufReadU8(src); // DEPRECATED 1.43: dyn_notch_range
+            sbufReadU8(src); // DEPRECATED 1.44: dyn_notch_width_percent
+            sbufReadU16(src); // DEPRECATED 1.44: dyn_notch_q
             gyroConfigMutable()->dyn_notch_min_hz = sbufReadU16(src);
 #else
             sbufReadU8(src);
@@ -2638,12 +2668,19 @@ static mspResult_e mspProcessInCommand(mspDescriptor_t srcDesc, int16_t cmdMSP, 
             sbufReadU16(src);
 #endif
         }
-        if (sbufBytesRemaining(src) >= 1) {
+        if (sbufBytesRemaining(src) >= 4) {
             // Added in MSP API 1.44
 #if defined(USE_DYN_LPF)
             currentPidProfile->dyn_lpf_curve_expo = sbufReadU8(src);
 #else
             sbufReadU8(src);
+#endif
+#if defined(USE_GYRO_DATA_ANALYSE)
+            gyroConfigMutable()->dyn_notch_count = sbufReadU8(src);
+            gyroConfigMutable()->dyn_notch_bandwidth_hz = sbufReadU16(src);
+#else
+            sbufReadU8(src);
+            sbufReadU16(src);
 #endif
         }
 
@@ -3063,7 +3100,7 @@ static mspResult_e mspProcessInCommand(mspDescriptor_t srcDesc, int16_t cmdMSP, 
 #endif
 
 #ifdef USE_SIMPLIFIED_TUNING
-    // Added in MSP API 1.43
+    // Added in MSP API 1.44
     case MSP_SET_SIMPLIFIED_TUNING:
         currentPidProfile->simplified_pids_mode = sbufReadU8(src);
         currentPidProfile->simplified_master_multiplier = sbufReadU8(src);

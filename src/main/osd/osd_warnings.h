@@ -20,10 +20,9 @@
 
 #pragma once
 
-#include "scheduler/scheduler.h"
+#define OSD_WARNINGS_MAX_SIZE 12
+#define OSD_FORMAT_MESSAGE_BUFFER_SIZE (OSD_WARNINGS_MAX_SIZE + 1)
 
-void tasksInit(void);
-task_t *getTask(unsigned taskId);
+STATIC_ASSERT(OSD_FORMAT_MESSAGE_BUFFER_SIZE <= OSD_ELEMENT_BUFFER_LENGTH, osd_warnings_size_exceeds_buffer_size);
 
-bool taskUpdateRxMainInProgress();
-
+void renderOsdWarning(char *warningText, bool *blinking, uint8_t *displayAttr);
