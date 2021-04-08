@@ -82,6 +82,7 @@ Click on a command to jump to the relevant documentation page.
 | [`smix`](Mixer.md)                      | design custom servo mixer                      |
 | [`color`](LedStrip.md)                  | configure colors                               |
 | `defaults`                              | reset to defaults and reboot                   |
+| `dma`                                   | configure direct memory access channel         |
 | `dump`                                  | print configurable settings in a pastable form |
 | `exit`                                  |                                                |
 | `feature`                               | list or -val or val                            |
@@ -102,6 +103,7 @@ Click on a command to jump to the relevant documentation page.
 | `serialpassthrough`                     | serial passthrough mode, reset board to exit   |
 | `set`                                   | name=value or blank or * for list              |
 | `status`                                | show system status                             |
+| `timer`                                 | configure timer                                |
 | `version`                               | show version                                   |
 | [`serial`](Serial.md)                   | configure serial ports                         |
 | [`servo`](Mixer.md)                     | configure servos                               |
