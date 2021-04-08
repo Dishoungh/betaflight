@@ -40,7 +40,7 @@ int main(void)
 
 void FAST_CODE FAST_CODE_NOINLINE run(void)
 {
-    while(1){
+    while (true) {
         scheduler();
         processLoopback();
 #ifdef SIMULATOR_BUILD
